@@ -1,8 +1,11 @@
+#!/usr/bin/python
+
 import sys, pygame
 from pygame.locals import *
 import time
 import subprocess
-import os
+import os,requests,json,pprint
+
 from subprocess import *
 os.environ["SDL_FBDEV"] = "/dev/fb1"
 os.environ["SDL_MOUSEDEV"] = "/dev/input/touchscreen"
@@ -14,7 +17,7 @@ pygame.mouse.set_visible(0)
 
 # define function for printing text in a specific place with a specific width and height with a specific colour and border
 def make_button(text, xpo, ypo, height, width, colour):
-    font=pygame.font.Font(None,42)
+    font=pygame.font.Font(None,32)
     label=font.render(str(text), 1, (colour))
     screen.blit(label,(xpo,ypo))
     pygame.draw.rect(screen, blue, (xpo-10,ypo-10,width,height),3)
@@ -112,21 +115,39 @@ screen = pygame.display.set_mode(size)
 screen.fill(black)
 
 # Outer Border
-pygame.draw.rect(screen, blue, (0,0,320,240),10)
+#pygame.draw.rect(screen, blue, (0,0,320,240),10)
+
+res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
+d=res1.json()
+#pprint.pprint(d)
+print d
+
+if len(d) > 0:
+    if 'glucose' in d[0]:
+        glucose=d[0]['glucose']
+    else:
+        glucose=0
+
+
+#res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')
+#data2=res2.json()
+#pprint.pprint(data2)
+
+
 
 # Buttons and labels
 # First Row
-make_button("Menu Item 1", 30, 30, 55, 210, blue)
-#make_button("Menu Item 2", 260, 30, 55, 210, blue)
+make_label(glucose, 30, 30, 28, green)
+#make_button("Menu Item 2", 260, 30, 55, 210, green)
 # Second Row
-make_button("Menu Item 3", 30, 105, 55, 210, blue)
-#make_button("Menu item 4", 260, 105, 55, 210, blue)
+make_label("Eric 3", 30, 105, 28, green)
+#make_button("Menu item 4", 260, 105, 55, 210, green)
 # Third Row
-make_button("Menu item 5", 30, 180, 55, 210, blue)
-#make_button("Menu item 6", 260, 180, 55, 210, blue)
+make_label("Eric 5", 30, 180, 28, green)
+#make_button("Menu item 6", 260, 180, 55, 210, green)
 # Fourth Row
-# make_button("Menu item 7", 30, 255, 55, 210, blue)
-# make_button("Menu item 8", 260, 255, 55, 210, blue)
+# make_button("Menu item 7", 30, 255, 55, 210, green)
+# make_button("Menu item 8", 260, 255, 55, 210, green)
 
 # While loop to manage touch screen inputs
 while 1:
