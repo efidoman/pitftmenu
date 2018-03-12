@@ -27,6 +27,55 @@ def make_label(text, xpo, ypo, fontsize, colour):
     font=pygame.font.Font(None,fontsize)
     label=font.render(str(text), 1, (colour))
     screen.blit(label,(xpo,ypo))
+    return label
+
+def update_dashboard():
+    try:
+        res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
+        d=res1.json()
+        pprint.pprint(d)
+    except:
+        print "failed request entries"
+
+    try:
+        entryid=d[0]['_id']
+        glucose=d[0]['glucose']
+        unfiltered=d[0]['unfiltered']
+        filtered=d[0]['filtered']
+        direction=d[0]['direction']
+        noise=d[0]['noise']
+        print 'entry id =',entryid,', direction=',direction,', noise=',noise
+        print 'glucose =',glucose,', unfiltered=',unfiltered,', filtered=',filtered
+    except:
+        print "Glucose not found in response to get entries"
+
+
+    try:
+        res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')      
+        data2=res2.json()
+        pprint.pprint(data2)
+    except:
+        print "failed request devicestatus"
+
+    try:
+        edison_battery=data2[0]['uploader']['battery']
+        cob=data2[0]['openaps']['enacted']['COB']
+        iob=data2[0]['openaps']['enacted']['IOB']
+        tick=data2[0]['openaps']['enacted']['tick']
+        enacttimestamp=data2[0]['openaps']['enacted']['timestamp']
+        print 'enact timestamp =',enacttimestamp
+        print 'tick =',tick
+        print 'COB =',cob
+        print 'IOB =',iob
+        print 'edison battery =',edison_battery
+    except:
+        print "Edison battery not found in response to get devicestatus"
+    
+    screen.fill(black)
+    make_label(glucose, 10, 10, 80, green)
+    make_label(tick, 130, 10, 20, green)
+    make_label(direction, 130, 50, 20, green)
+    pygame.display.update()
 
 # define function that checks for touch location
 def on_touch():
@@ -64,35 +113,27 @@ def button(number):
 
     if number == 1:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 2:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 3:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 4:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 5:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 6:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 7:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
     if number == 8:
         time.sleep(5) #do something interesting here
-        sys.exit()
 
 #colors     R    G    B
 white   = (255, 255, 255)
@@ -120,13 +161,12 @@ screen.fill(black)
 res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
 d=res1.json()
 #pprint.pprint(d)
-print d
+#print d
 
+glucose=0
 if len(d) > 0:
     if 'glucose' in d[0]:
         glucose=d[0]['glucose']
-    else:
-        glucose=0
 
 
 #res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')
@@ -137,7 +177,6 @@ if len(d) > 0:
 
 # Buttons and labels
 # First Row
-make_label(glucose, 30, 30, 28, green)
 #make_button("Menu Item 2", 260, 30, 55, 210, green)
 # Second Row
 make_label("Eric 3", 30, 105, 28, green)
@@ -150,6 +189,8 @@ make_label("Eric 5", 30, 180, 28, green)
 # make_button("Menu item 8", 260, 255, 55, 210, green)
 
 # While loop to manage touch screen inputs
+counter=600
+loops=0
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -157,6 +198,7 @@ while 1:
             pos = (pygame.mouse.get_pos() [0], pygame.mouse.get_pos() [1])
             print pos #for checking
             pygame.draw.circle(screen, white, pos, 2, 0) #for debugging purposes - adds a small dot where the screen is pressed
+            sys.exit()
             on_touch()
 
 #ensure there is always a safe way to end the program if the touch screen fails
@@ -164,4 +206,16 @@ while 1:
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 sys.exit()
-    pygame.display.update()
+
+    if counter >= 600:
+        counter = 0
+        update_dashboard()
+        loops = loops + 1
+
+    pygame.time.wait(100)
+    counter=counter+1
+
+
+
+
+
