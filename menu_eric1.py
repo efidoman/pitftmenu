@@ -22,12 +22,17 @@ def make_button(text, xpo, ypo, height, width, colour):
     screen.blit(label,(xpo,ypo))
     pygame.draw.rect(screen, blue, (xpo-10,ypo-10,width,height),3)
 
+
+text_width, text_height = self.font.size("txt") #txt being whatever str you're rendering
+
+
 # define function for printing text in a specific place with a specific colour
+# returns rendered text width, height
 def make_label(text, xpo, ypo, fontsize, colour):
     font=pygame.font.Font(None,fontsize)
     label=font.render(str(text), 1, (colour))
     screen.blit(label,(xpo,ypo))
-    return label
+    return font.size(str(text)) 
 
 def update_dashboard():
     try:
@@ -36,6 +41,7 @@ def update_dashboard():
         pprint.pprint(d)
     except:
         print "failed request entries"
+        return
 
     try:
         entryid=d[0]['_id']
@@ -72,7 +78,7 @@ def update_dashboard():
         print "Edison battery not found in response to get devicestatus"
     
     screen.fill(black)
-    make_label(glucose, 10, 10, 80, green)
+    width,heith = make_label(glucose, 10, 10, 80, green)
     make_label(tick, 130, 10, 20, green)
     make_label(direction, 130, 50, 20, green)
     pygame.display.update()

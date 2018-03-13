@@ -2,6 +2,12 @@
 
 import os, requests, json, pprint
 
+
+def test():
+    print "here 1"
+    return
+    print "here 2"
+
 try:
     res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
     d=res1.json()
@@ -29,6 +35,7 @@ try:
 except:
     print "failed request devicestatus"
 
+
 try:
     edison_battery=data2[0]['uploader']['battery']
     cob=data2[0]['openaps']['enacted']['COB']
@@ -43,3 +50,4 @@ try:
 except:
     print "Edison battery not found in response to get devicestatus"
     
+test()
