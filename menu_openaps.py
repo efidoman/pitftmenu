@@ -4,7 +4,8 @@ import sys, pygame
 from pygame.locals import *
 import math,time
 import subprocess
-import os,requests,json,pprint
+import os,requests,json,pprint,datetime
+from time import gmtime, strftime
 
 from subprocess import *
 os.environ["SDL_FBDEV"] = "/dev/fb1"
@@ -27,9 +28,6 @@ def make_button(text, xpo, ypo, height, width, colour):
     screen.blit(label,(xpo,ypo))
     pygame.draw.rect(screen, blue, (xpo-10,ypo-10,width,height),3)
 
-
-
-
 # define function for printing text in a specific place with a specific colour
 # returns rendered text width, height
 def make_label(text, xpo, ypo, fontsize, colour):
@@ -49,13 +47,13 @@ def update_dashboard():
 
     try:
         entryid=d[0]['_id']
-        glucose=d[0]['glucose']
+        bg=d[0]['glucose']
         unfiltered=d[0]['unfiltered']
         filtered=d[0]['filtered']
         direction=d[0]['direction']
         noise=d[0]['noise']
         print 'entry id =',entryid,', direction=',direction,', noise=',noise
-        print 'glucose =',glucose,', unfiltered=',unfiltered,', filtered=',filtered
+        print 'bg =',bg,', unfiltered=',unfiltered,', filtered=',filtered
     except:
         print "Glucose not found in response to get entries"
 
@@ -81,13 +79,24 @@ def update_dashboard():
     except:
         print "Edison battery not found in response to get devicestatus"
     
-    screen.fill(black)
-    width,height=make_label(glucose, 10, 10, 80, green)
-    print "width =",width,"height =",height
 
-    make_label(tick, 10+width+30, 10, 40, green)
-    make_label(direction, 10+width+30, 10+height/2, 40, green)
-    draw_arrow(screen, green, (width+10,height+10), (width+10,height+100))
+#timeHHMM=datetime.datetime.now()
+
+   # timeHHMM=strftime("%H:%M", datetime.datetime.now())
+    timeNow = datetime.datetime.now()
+    timeHHMM = timeNow.strftime("%I:%M")
+
+
+    screen.fill(black)
+    leftB=5
+    topB=5
+    glucW,glucH=make_label(bg, leftB, topB, 100, green)
+    print "glucW =",glucW,"glucH =",glucH
+
+    make_label(tick, leftB + glucW + 30, topB, 40, green)
+    make_label(direction, leftB + glucW + 30, topB + glucH/2, 40, green)
+    draw_arrow(screen, green, (glucW + 10,glucH+10), (glucW+10,glucH+100))
+    make_label(timeHHMM, leftB, glucH+30, 50, green)
     pygame.display.update()
 
 # define function that checks for touch location
@@ -171,15 +180,15 @@ screen.fill(black)
 # Outer Border
 #pygame.draw.rect(screen, blue, (0,0,320,240),10)
 
-res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
-d=res1.json()
+#res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
+#d=res1.json()
 #pprint.pprint(d)
 #print d
 
-glucose=0
-if len(d) > 0:
-    if 'glucose' in d[0]:
-        glucose=d[0]['glucose']
+#glucose=0
+#if len(d) > 0:
+#    if 'glucose' in d[0]:
+#        glucose=d[0]['glucose']
 
 
 #res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')
