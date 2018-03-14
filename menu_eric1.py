@@ -2,7 +2,7 @@
 
 import sys, pygame
 from pygame.locals import *
-import time
+import math,time
 import subprocess
 import os,requests,json,pprint
 
@@ -14,6 +14,11 @@ os.environ["SDL_MOUSEDRV"] = "TSLIB"
 # Initialize pygame and hide mouse
 pygame.init()
 pygame.mouse.set_visible(0)
+
+def draw_arrow(screen, colour, start, end):
+    pygame.draw.line(screen,colour,start,end,2)
+    rotation = math.degrees(math.atan2(start[1]-end[1], end[0]-start[0]))+90
+    pygame.draw.polygon(screen, colour, ((end[0]+20*math.sin(math.radians(rotation)), end[1]+20*math.cos(math.radians(rotation))), (end[0]+20*math.sin(math.radians(rotation-120)), end[1]+20*math.cos(math.radians(rotation-120))), (end[0]+20*math.sin(math.radians(rotation+120)), end[1]+20*math.cos(math.radians(rotation+120)))))
 
 # define function for printing text in a specific place with a specific width and height with a specific colour and border
 def make_button(text, xpo, ypo, height, width, colour):
@@ -27,7 +32,7 @@ def make_label(text, xpo, ypo, fontsize, colour):
     font=pygame.font.Font(None,fontsize)
     label=font.render(str(text), 1, (colour))
     screen.blit(label,(xpo,ypo))
-    return label
+    return font.size(str(text))
 
 def update_dashboard():
     try:
@@ -72,9 +77,12 @@ def update_dashboard():
         print "Edison battery not found in response to get devicestatus"
     
     screen.fill(black)
-    make_label(glucose, 10, 10, 80, green)
-    make_label(tick, 130, 10, 20, green)
-    make_label(direction, 130, 50, 20, green)
+    width,height=make_label(glucose, 10, 10, 80, green)
+    print "width =",width,"height =",height
+
+    make_label(tick, 10+width+30, 10, 40, green)
+    make_label(direction, 10+width+30, 10+height/2, 40, green)
+    draw_arrow(screen, green, (width+10,height+10), (width+10,height+100))
     pygame.display.update()
 
 # define function that checks for touch location
