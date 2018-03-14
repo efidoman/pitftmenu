@@ -90,13 +90,13 @@ def update_dashboard():
     screen.fill(black)
     leftB=5
     topB=5
-    glucW,glucH=make_label(bg, leftB, topB, 100, green)
+    glucW, glucH = make_label(bg, leftB, topB, 100, green)
     print "glucW =",glucW,"glucH =",glucH
 
-    make_label(tick, leftB + glucW + 30, topB, 40, green)
-    make_label(direction, leftB + glucW + 30, topB + glucH/2, 40, green)
+    tickW, tickH = make_label(tick, leftB + glucW + 40, topB, 40, green)
+    make_label(direction, leftB + glucW + 40, topB + glucH/2, 40, green)
     draw_arrow(screen, green, (glucW + 10,glucH+10), (glucW+10,glucH+100))
-    make_label(timeHHMM, leftB, glucH+30, 50, green)
+    make_label(timeHHMM, leftB + glucW + tickW + 40, topB, 40, green)
     pygame.display.update()
 
 # define function that checks for touch location
