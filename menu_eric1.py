@@ -27,12 +27,21 @@ def make_button(text, xpo, ypo, height, width, colour):
     screen.blit(label,(xpo,ypo))
     pygame.draw.rect(screen, blue, (xpo-10,ypo-10,width,height),3)
 
+
+text_width, text_height = self.font.size("txt") #txt being whatever str you're rendering
+
+
 # define function for printing text in a specific place with a specific colour
+# returns rendered text width, height
 def make_label(text, xpo, ypo, fontsize, colour):
     font=pygame.font.Font(None,fontsize)
     label=font.render(str(text), 1, (colour))
     screen.blit(label,(xpo,ypo))
+<<<<<<< HEAD
     return font.size(str(text))
+=======
+    return font.size(str(text)) 
+>>>>>>> 2993e7bcc4837733f6e5b580f9972a4b7dc560c8
 
 def update_dashboard():
     try:
@@ -41,6 +50,7 @@ def update_dashboard():
         pprint.pprint(d)
     except:
         print "failed request entries"
+        return
 
     try:
         entryid=d[0]['_id']
@@ -77,12 +87,18 @@ def update_dashboard():
         print "Edison battery not found in response to get devicestatus"
     
     screen.fill(black)
+<<<<<<< HEAD
     width,height=make_label(glucose, 10, 10, 80, green)
     print "width =",width,"height =",height
 
     make_label(tick, 10+width+30, 10, 40, green)
     make_label(direction, 10+width+30, 10+height/2, 40, green)
     draw_arrow(screen, green, (width+10,height+10), (width+10,height+100))
+=======
+    width,heith = make_label(glucose, 10, 10, 80, green)
+    make_label(tick, 130, 10, 20, green)
+    make_label(direction, 130, 50, 20, green)
+>>>>>>> 2993e7bcc4837733f6e5b580f9972a4b7dc560c8
     pygame.display.update()
 
 # define function that checks for touch location
