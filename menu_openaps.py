@@ -107,13 +107,16 @@ def update_dashboard():
     #  direction='FortyFiveDown' trend=5
     #  direction='Flat' trend=4
 
+    trend=1
     startx = glucW + spacing
-    trend=2
     starty = tickH + 10 
     if trend == 4:
         draw_arrow(screen, green, (startx,starty+5), (startx+30,starty+5))
     if trend == 2:
         draw_arrow(screen, green, (startx+15,starty+20), (startx+15,starty))
+    if trend == 1:
+        draw_arrow(screen, green, (startx+5,starty+20), (startx+5,starty))
+        draw_arrow(screen, green, (startx+20,starty+20), (startx+20,starty))
 
     make_label(timeHHMM, leftB + glucW + tickW + 2 * spacing, topB, 40, green)
     pygame.display.update()
