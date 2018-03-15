@@ -17,9 +17,10 @@ pygame.init()
 pygame.mouse.set_visible(0)
 
 def draw_arrow(screen, colour, start, end):
+    arrowSize=8
     pygame.draw.line(screen,colour,start,end,2)
     rotation = math.degrees(math.atan2(start[1]-end[1], end[0]-start[0]))+90
-    pygame.draw.polygon(screen, colour, ((end[0]+20*math.sin(math.radians(rotation)), end[1]+20*math.cos(math.radians(rotation))), (end[0]+20*math.sin(math.radians(rotation-120)), end[1]+20*math.cos(math.radians(rotation-120))), (end[0]+20*math.sin(math.radians(rotation+120)), end[1]+20*math.cos(math.radians(rotation+120)))))
+    pygame.draw.polygon(screen, colour, ((end[0]+arrowSize*math.sin(math.radians(rotation)), end[1]+arrowSize*math.cos(math.radians(rotation))), (end[0]+arrowSize*math.sin(math.radians(rotation-120)), end[1]+arrowSize*math.cos(math.radians(rotation-120))), (end[0]+arrowSize*math.sin(math.radians(rotation+120)), end[1]+arrowSize*math.cos(math.radians(rotation+120)))))
 
 # define function for printing text in a specific place with a specific width and height with a specific colour and border
 def make_button(text, xpo, ypo, height, width, colour):
@@ -51,6 +52,7 @@ def update_dashboard():
         unfiltered=d[0]['unfiltered']
         filtered=d[0]['filtered']
         direction=d[0]['direction']
+        trend=d[0]['trend']
         noise=d[0]['noise']
         print 'entry id =',entryid,', direction=',direction,', noise=',noise
         print 'bg =',bg,', unfiltered=',unfiltered,', filtered=',filtered
@@ -90,13 +92,30 @@ def update_dashboard():
     screen.fill(black)
     leftB=5
     topB=5
+    spacing=20
     glucW, glucH = make_label(bg, leftB, topB, 100, green)
     print "glucW =",glucW,"glucH =",glucH
 
-    tickW, tickH = make_label(tick, leftB + glucW + 40, topB, 40, green)
-    make_label(direction, leftB + glucW + 40, topB + glucH/2, 40, green)
-    draw_arrow(screen, green, (glucW + 10,glucH+10), (glucW+10,glucH+100))
-    make_label(timeHHMM, leftB + glucW + tickW + 40, topB, 40, green)
+    tickW, tickH = make_label(tick, leftB + glucW + spacing, topB, 40, green)
+    #make_label(direction, leftB + glucW + spacing, topB + glucH/2, 40, green)
+ 
+    #  direction='DoubleUp' trend=1
+    #  direction='SingleUp' trend=2
+    #  direction='FortyFiveUp' trend=3
+    #  direction='DoubleDown' trend=7
+    #  direction='SingleDown' trend=6
+    #  direction='FortyFiveDown' trend=5
+    #  direction='Flat' trend=4
+
+    startx = glucW + spacing
+    trend=2
+    starty = tickH + 10 
+    if trend == 4:
+        draw_arrow(screen, green, (startx,starty+5), (startx+30,starty+5))
+    if trend == 2:
+        draw_arrow(screen, green, (startx+15,starty+20), (startx+15,starty))
+
+    make_label(timeHHMM, leftB + glucW + tickW + 2 * spacing, topB, 40, green)
     pygame.display.update()
 
 # define function that checks for touch location
