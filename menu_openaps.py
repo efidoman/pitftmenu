@@ -133,6 +133,8 @@ def update_dashboard():
         draw_arrow(screen, green, (startx+12,starty), (startx+12,starty+20))
 
     make_label(timeHHMM, leftB + glucW + tickW + 2 * spacing, topB, 40, green)
+    iob = iob + 'U'
+    make_label(iob, leftB + glucW + tickW + 2 * spacing, topB + 50, green)
     pygame.display.update()
 
 # define function that checks for touch location
