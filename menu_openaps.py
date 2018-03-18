@@ -92,21 +92,20 @@ def update_dashboard():
     screen.fill(black)
     leftB=5
     topB=5
-    spacing=20
+    spacingW=20
+    spacingH=5
 
     # Testing
 #    bg=343
-    trend=5
+#    trend=5
     # Ending Testing
 
     glucW, glucH = make_label(bg, leftB, topB, 100, green)
     print "glucW =",glucW,"glucH =",glucH
 
-    tickW, tickH = make_label(tick, leftB + glucW + spacing, topB, 40, green)
-    #make_label(direction, leftB + glucW + spacing, topB + glucH/2, 40, green)
- 
+    tickW, tickH = make_label(tick, leftB + glucW + spacingW, topB, 50, green)
 
-    startx = glucW + spacing
+    startx = glucW + spacingW
     starty = tickH + 10 
     if trend == 1:
         #  direction='DoubleUp'
@@ -132,9 +131,16 @@ def update_dashboard():
         #  direction='SingleDown'
         draw_arrow(screen, green, (startx+12,starty), (startx+12,starty+20))
 
-    make_label(timeHHMM, leftB + glucW + tickW + 2 * spacing, topB, 40, green)
-    iob = iob + 'U'
-    make_label(iob, leftB + glucW + tickW + 2 * spacing, topB + 50, green)
+    make_label(timeHHMM, leftB + glucW + tickW + 2 * spacingW, topB, 60, green)
+    iobs = "%.1f" % iob + 'u'
+    cobs = "%.0f" % cob + 'g'
+#    iobs = str(iob) + 'U'
+
+    startx = leftB
+    starty = topB + glucH + 0 #spacingH
+    w,h = make_label(iobs, startx, starty, 80, green)
+    starty = starty + h
+    w,h = make_label(cobs, startx, starty, 80, green)
     pygame.display.update()
 
 # define function that checks for touch location
