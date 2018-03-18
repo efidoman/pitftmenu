@@ -1,5 +1,6 @@
 #!/bin/bash
+TEXT=${1:-"saving work"}
 
 git add *
-git commit -m "save"
+git commit -m "$TEXT"
 git push origin master
