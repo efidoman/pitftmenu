@@ -95,8 +95,8 @@ def update_dashboard():
     spacing=20
 
     # Testing
-    bg=343
-    trend=6
+#    bg=343
+    trend=3
     # Ending Testing
 
     glucW, glucH = make_label(bg, leftB, topB, 100, green)
@@ -105,7 +105,6 @@ def update_dashboard():
     tickW, tickH = make_label(tick, leftB + glucW + spacing, topB, 40, green)
     #make_label(direction, leftB + glucW + spacing, topB + glucH/2, 40, green)
  
-    #  direction='FortyFiveUp' trend=3
     #  direction='FortyFiveDown' trend=5
 
     startx = glucW + spacing
@@ -117,6 +116,9 @@ def update_dashboard():
     if trend == 2:
         #  direction='SingleUp'
         draw_arrow(screen, green, (startx+12,starty+20), (startx+12,starty))
+    if trend == 3:
+        #  direction='FortyFiveUp'
+        draw_arrow(screen, green, (startx,starty+20), (startx+20,starty))
     if trend == 4:
         #  direction='Flat'
         draw_arrow(screen, green, (startx,starty+5), (startx+30,starty+5))
