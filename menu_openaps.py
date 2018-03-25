@@ -41,13 +41,14 @@ def update_dashboard():
     try:
         res1=requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/entries.json?count=1')
         d=res1.json()
-        pprint.pprint(d)
+        #pprint.pprint(d)
     except:
         print "failed request entries"
         return
 
     try:
         entryid=d[0]['_id']
+        entrydate=d[0]['date']/1000 # convert from milliseconds to seconds
         bg=d[0]['glucose']
         unfiltered=d[0]['unfiltered']
         filtered=d[0]['filtered']
@@ -58,14 +59,21 @@ def update_dashboard():
         print 'bg =',bg,', unfiltered=',unfiltered,', filtered=',filtered
     except:
         print "Glucose not found in response to get entries"
+        return
+
+    if update_dashboard.lastentryid == entryid:
+        return # need to update clock here
+    else:
+        update_dashboard.lastentryid=entryid
 
 
     try:
         res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')      
         data2=res2.json()
-        pprint.pprint(data2)
+        #pprint.pprint(data2)
     except:
         print "failed request devicestatus"
+        return
 
     try:
         edison_battery=data2[0]['uploader']['battery']
@@ -80,13 +88,22 @@ def update_dashboard():
         print 'edison battery =',edison_battery
     except:
         print "Edison battery not found in response to get devicestatus"
+        return
     
 
 #timeHHMM=datetime.datetime.now()
 
    # timeHHMM=strftime("%H:%M", datetime.datetime.now())
     timeNow = datetime.datetime.now()
+    epochdate = time.time()
+    print "timeNow=",timeNow 
+    print "entrydate=", entrydate
+    print "epochdate=", epochdate
     timeHHMM = timeNow.strftime("%I:%M")
+    minutesBG = (epochdate - entrydate)/60
+    print "minutesBG=", minutesBG
+    mins = "%.0f" % minutesBG + 'min'
+    print "mins=", mins
 
 
     screen.fill(black)
@@ -100,48 +117,52 @@ def update_dashboard():
 #    trend=5
     # Ending Testing
 
-    glucW, glucH = make_label(bg, leftB, topB, 100, green)
+    glucW, glucH = make_label(bg, leftB, topB, 100, fgColor)
     print "glucW =",glucW,"glucH =",glucH
 
-    tickW, tickH = make_label(tick, leftB + glucW + spacingW, topB, 50, green)
+    tickW, tickH = make_label(tick, leftB + glucW + spacingW, topB, 50, fgColor)
 
     startx = glucW + spacingW
     starty = tickH + 10 
     if trend == 1:
         #  direction='DoubleUp'
-        draw_arrow(screen, green, (startx+5,starty+20), (startx+5,starty))
-        draw_arrow(screen, green, (startx+20,starty+20), (startx+20,starty))
+        draw_arrow(screen, fgColor, (startx+5,starty+20), (startx+5,starty))
+        draw_arrow(screen, fgColor, (startx+20,starty+20), (startx+20,starty))
     if trend == 2:
         #  direction='SingleUp'
-        draw_arrow(screen, green, (startx+12,starty+20), (startx+12,starty))
+        draw_arrow(screen, fgColor, (startx+12,starty+20), (startx+12,starty))
     if trend == 3:
         #  direction='FortyFiveUp'
-        draw_arrow(screen, green, (startx,starty+20), (startx+20,starty))
+        draw_arrow(screen, fgColor, (startx,starty+20), (startx+20,starty))
     if trend == 4:
         #  direction='Flat'
-        draw_arrow(screen, green, (startx,starty+5), (startx+30,starty+5))
+        draw_arrow(screen, fgColor, (startx,starty+5), (startx+30,starty+5))
     if trend == 5:
         #  direction='FortyFiveDown'
-        draw_arrow(screen, green, (startx,starty), (startx+20,starty+20))
+        draw_arrow(screen, fgColor, (startx,starty), (startx+20,starty+20))
     if trend == 7:
         #  direction='DoubleDown'
-        draw_arrow(screen, green, (startx+5,starty), (startx+5,starty+20))
-        draw_arrow(screen, green, (startx+20,starty), (startx+20,starty+20))
+        draw_arrow(screen, fgColor, (startx+5,starty), (startx+5,starty+20))
+        draw_arrow(screen, fgColor, (startx+20,starty), (startx+20,starty+20))
     if trend == 6:
         #  direction='SingleDown'
-        draw_arrow(screen, green, (startx+12,starty), (startx+12,starty+20))
+        draw_arrow(screen, fgColor, (startx+12,starty), (startx+12,starty+20))
 
-    make_label(timeHHMM, leftB + glucW + tickW + 2 * spacingW, topB, 60, green)
+    w,h = make_label(timeHHMM, leftB + glucW + tickW + 2 * spacingW, topB, 60, fgColor)
     iobs = "%.1f" % iob + 'u'
     cobs = "%.0f" % cob + 'g'
 #    iobs = str(iob) + 'U'
+    
+    make_label(mins, leftB + glucW + tickW + 2 * spacingW, topB + h + spacingH, 60, fgColor)
 
     startx = leftB
     starty = topB + glucH + 0 #spacingH
-    w,h = make_label(iobs, startx, starty, 80, green)
+    w,h = make_label(iobs, startx, starty, 80, fgColor)
     starty = starty + h
-    w,h = make_label(cobs, startx, starty, 80, green)
+    w,h = make_label(cobs, startx, starty, 80, fgColor)
     pygame.display.update()
+
+update_dashboard.lastentryid=''
 
 # define function that checks for touch location
 def on_touch():
@@ -211,6 +232,7 @@ cyan    = ( 50, 255, 255)
 magenta = (255,   0, 255)
 yellow  = (255, 255,   0)
 orange  = (255, 127,   0)
+fgColor = ( 30,  80,  80)
 
 # Set up the base menu you can customize your menu with the colors above
 
@@ -243,16 +265,16 @@ screen.fill(black)
 
 # Buttons and labels
 # First Row
-#make_button("Menu Item 2", 260, 30, 55, 210, green)
+#make_button("Menu Item 2", 260, 30, 55, 210, fgColor)
 # Second Row
-make_label("Eric 3", 30, 105, 28, green)
-#make_button("Menu item 4", 260, 105, 55, 210, green)
+make_label("Eric 3", 30, 105, 28, fgColor)
+#make_button("Menu item 4", 260, 105, 55, 210, fgColor)
 # Third Row
-make_label("Eric 5", 30, 180, 28, green)
-#make_button("Menu item 6", 260, 180, 55, 210, green)
+make_label("Eric 5", 30, 180, 28, fgColor)
+#make_button("Menu item 6", 260, 180, 55, 210, fgColor)
 # Fourth Row
-# make_button("Menu item 7", 30, 255, 55, 210, green)
-# make_button("Menu item 8", 260, 255, 55, 210, green)
+# make_button("Menu item 7", 30, 255, 55, 210, fgColor)
+# make_button("Menu item 8", 260, 255, 55, 210, fgColor)
 
 # While loop to manage touch screen inputs
 counter=600
