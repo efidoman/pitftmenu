@@ -17,7 +17,7 @@ pygame.init()
 pygame.mouse.set_visible(0)
 
 def draw_arrow(screen, colour, start, end):
-    arrowSize=8
+    arrowSize=9
     pygame.draw.line(screen,colour,start,end,2)
     rotation = math.degrees(math.atan2(start[1]-end[1], end[0]-start[0]))+90
     pygame.draw.polygon(screen, colour, ((end[0]+arrowSize*math.sin(math.radians(rotation)), end[1]+arrowSize*math.cos(math.radians(rotation))), (end[0]+arrowSize*math.sin(math.radians(rotation-120)), end[1]+arrowSize*math.cos(math.radians(rotation-120))), (end[0]+arrowSize*math.sin(math.radians(rotation+120)), end[1]+arrowSize*math.cos(math.radians(rotation+120)))))
@@ -62,7 +62,8 @@ def update_dashboard():
         return
 
     if update_dashboard.lastentryid == entryid:
-        return # need to update clock here
+        print "No change yet glucose entry"
+#        return # need to update clock here
     else:
         update_dashboard.lastentryid=entryid
 
@@ -70,13 +71,13 @@ def update_dashboard():
     try:
         res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')      
         data2=res2.json()
-        #pprint.pprint(data2)
+        pprint.pprint(data2)
     except:
         print "failed request devicestatus"
         return
 
     try:
-        edison_battery=data2[0]['uploader']['battery']
+        rigbattery=data2[0]['uploader']['battery']
         cob=data2[0]['openaps']['enacted']['COB']
         iob=data2[0]['openaps']['enacted']['IOB']
         tick=data2[0]['openaps']['enacted']['tick']
@@ -85,7 +86,7 @@ def update_dashboard():
         print 'tick =',tick
         print 'COB =',cob
         print 'IOB =',iob
-        print 'edison battery =',edison_battery
+        print 'rigbattery =',rigbattery
     except:
         print "Edison battery not found in response to get devicestatus"
         return
@@ -109,7 +110,7 @@ def update_dashboard():
     screen.fill(black)
     leftB=5
     topB=5
-    spacingW=20
+    spacingW=12
     spacingH=2
 
     # Testing
@@ -122,38 +123,42 @@ def update_dashboard():
 
     tickW, tickH = make_label(tick, leftB + glucW + spacingW, topB, 50, fgColor)
 
-    startx = glucW + spacingW
+    startx = glucW + spacingW +25
     starty = tickH + 10 
     if trend == 1:
         #  direction='DoubleUp'
-        draw_arrow(screen, fgColor, (startx+5,starty+20), (startx+5,starty))
-        draw_arrow(screen, fgColor, (startx+20,starty+20), (startx+20,starty))
+        draw_arrow(screen, fgColor, (startx,starty+20), (startx,starty))
+        draw_arrow(screen, fgColor, (startx+25,starty+20), (startx+25,starty))
     if trend == 2:
         #  direction='SingleUp'
         draw_arrow(screen, fgColor, (startx+12,starty+20), (startx+12,starty))
     if trend == 3:
         #  direction='FortyFiveUp'
-        draw_arrow(screen, fgColor, (startx,starty+20), (startx+20,starty))
+        draw_arrow(screen, fgColor, (startx,starty+20), (startx+30,starty))
     if trend == 4:
         #  direction='Flat'
         draw_arrow(screen, fgColor, (startx,starty+5), (startx+30,starty+5))
     if trend == 5:
         #  direction='FortyFiveDown'
-        draw_arrow(screen, fgColor, (startx,starty), (startx+20,starty+20))
+        draw_arrow(screen, fgColor, (startx,starty), (startx+30,starty+20))
     if trend == 7:
         #  direction='DoubleDown'
-        draw_arrow(screen, fgColor, (startx+5,starty), (startx+5,starty+20))
-        draw_arrow(screen, fgColor, (startx+20,starty), (startx+20,starty+20))
+        draw_arrow(screen, fgColor, (startx,starty), (startx,starty+20))
+        draw_arrow(screen, fgColor, (startx+25,starty), (startx+25,starty+20))
     if trend == 6:
         #  direction='SingleDown'
         draw_arrow(screen, fgColor, (startx+12,starty), (startx+12,starty+20))
 
-    w,h = make_label(timeHHMM, leftB + glucW + tickW + 2 * spacingW, topB, 60, fgColor)
+    w,h1 = make_label(timeHHMM, leftB + glucW + tickW + 2 * spacingW, topB, 60, fgColor)
     iobs = "%.1f" % iob + 'u'
     cobs = "%.0f" % cob + 'g'
 #    iobs = str(iob) + 'U'
     
-    make_label(mins, leftB + glucW + tickW + 2 * spacingW, topB + h + spacingH, 60, fgColor)
+    w,h2 = make_label(mins, leftB + glucW + tickW + 2 * spacingW, topB + h1 + spacingH, 45, fgColor)
+
+    bat = "%.0f" % rigbattery + '%'
+  
+    make_label(bat, leftB + glucW + tickW + 2 * spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
 
     startx = leftB
     starty = topB + glucH + 0 #spacingH
