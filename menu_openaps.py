@@ -110,7 +110,7 @@ def update_dashboard():
     leftB=5
     topB=5
     spacingW=20
-    spacingH=5
+    spacingH=2
 
     # Testing
 #    bg=343
