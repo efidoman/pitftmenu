@@ -27,7 +27,7 @@ def make_button(text, xpo, ypo, height, width, colour):
     font=pygame.font.Font(None,32)
     label=font.render(str(text), 1, (colour))
     screen.blit(label,(xpo,ypo))
-    pygame.draw.rect(screen, blue, (xpo-10,ypo-10,width,height),3)
+    pygame.draw.rect(screen, colour, (xpo-10,ypo-10,width,height),3)
 
 # define function for printing text in a specific place with a specific colour
 # returns rendered text width, height
@@ -110,7 +110,7 @@ def update_dashboard():
     screen.fill(black)
     leftB=5
     topB=5
-    spacingW=12
+    spacingW=16
     spacingH=2
 
     # Testing
@@ -123,7 +123,7 @@ def update_dashboard():
 
     tickW, tickH = make_label(tick, leftB + glucW + spacingW, topB, 50, fgColor)
 
-    startx = glucW + spacingW +25
+    startx = glucW + spacingW +22
     starty = tickH + 10 
     if trend == 1:
         #  direction='DoubleUp'
@@ -149,22 +149,25 @@ def update_dashboard():
         #  direction='SingleDown'
         draw_arrow(screen, fgColor, (startx+12,starty), (startx+12,starty+20))
 
-    w,h1 = make_label(timeHHMM, startx + 30 +  spacingW, topB, 60, fgColor)
+    w,h1 = make_label(timeHHMM, startx + 35 +  spacingW, topB, 60, fgColor)
     iobs = "%.1f" % iob + 'u'
     cobs = "%.0f" % cob + 'g'
 #    iobs = str(iob) + 'U'
     
-    w,h2 = make_label(mins, startx + 30 +  spacingW, topB + h1 + spacingH, 45, fgColor)
+    w,h2 = make_label(mins, startx + 35 +  spacingW, topB + h1 + spacingH, 45, fgColor)
 
     bat = "%.0f" % rigbattery + '%'
   
-    make_label(bat, startx + 30 + spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
+    w,h3 = make_label(bat, startx + 35 + spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
+
+    make_button("Shutdown", startx + 15 + spacingW, topB + h1 + h2 + h3 + 3*spacingH, 55, 140, fgColor)
 
     startx = leftB
     starty = topB + glucH + 0 #spacingH
     w,h = make_label(iobs, startx, starty, 80, fgColor)
     starty = starty + h
     w,h = make_label(cobs, startx, starty, 80, fgColor)
+
     pygame.display.update()
 
 update_dashboard.lastentryid=''
@@ -265,21 +268,6 @@ screen.fill(black)
 #res2 = requests.get(os.environ["NIGHTSCOUT_HOST"] + '/api/v1/devicestatus?count=1')
 #data2=res2.json()
 #pprint.pprint(data2)
-
-
-
-# Buttons and labels
-# First Row
-#make_button("Menu Item 2", 260, 30, 55, 210, fgColor)
-# Second Row
-make_label("Eric 3", 30, 105, 28, fgColor)
-#make_button("Menu item 4", 260, 105, 55, 210, fgColor)
-# Third Row
-make_label("Eric 5", 30, 180, 28, fgColor)
-#make_button("Menu item 6", 260, 180, 55, 210, fgColor)
-# Fourth Row
-# make_button("Menu item 7", 30, 255, 55, 210, fgColor)
-# make_button("Menu item 8", 260, 255, 55, 210, fgColor)
 
 # While loop to manage touch screen inputs
 counter=600
