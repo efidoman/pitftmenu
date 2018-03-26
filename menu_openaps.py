@@ -149,16 +149,16 @@ def update_dashboard():
         #  direction='SingleDown'
         draw_arrow(screen, fgColor, (startx+12,starty), (startx+12,starty+20))
 
-    w,h1 = make_label(timeHHMM, leftB + glucW + tickW + 2 * spacingW, topB, 60, fgColor)
+    w,h1 = make_label(timeHHMM, startx + 30 +  spacingW, topB, 60, fgColor)
     iobs = "%.1f" % iob + 'u'
     cobs = "%.0f" % cob + 'g'
 #    iobs = str(iob) + 'U'
     
-    w,h2 = make_label(mins, leftB + glucW + tickW + 2 * spacingW, topB + h1 + spacingH, 45, fgColor)
+    w,h2 = make_label(mins, startx + 30 +  spacingW, topB + h1 + spacingH, 45, fgColor)
 
     bat = "%.0f" % rigbattery + '%'
   
-    make_label(bat, leftB + glucW + tickW + 2 * spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
+    make_label(bat, startx + 30 + spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
 
     startx = leftB
     starty = topB + glucH + 0 #spacingH
