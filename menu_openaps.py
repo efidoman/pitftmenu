@@ -16,6 +16,31 @@ os.environ["SDL_MOUSEDRV"] = "TSLIB"
 pygame.init()
 pygame.mouse.set_visible(0)
 
+
+sdX = 0
+sdY = 0
+sdW = 140
+sdH = 55
+
+# Restart Raspberry Pi
+def restart():
+    command = "/usr/bin/sudo /sbin/shutdown -r now"
+    process = Popen(command.split(), stdout=PIPE)
+    output = process.communicate()[0]
+    return output
+
+# Shutdown Raspberry Pi
+def shutdown():
+    command = "/usr/bin/sudo /sbin/shutdown -h now"
+    process = Popen(command.split(), stdout=PIPE)
+    output = process.communicate()[0]
+    return output
+
+def run_cmd(cmd):
+    process = Popen(cmd.split(), stdout=PIPE)
+    output = process.communicate()[0]
+    return output
+
 def draw_arrow(screen, colour, start, end):
     arrowSize=9
     pygame.draw.line(screen,colour,start,end,2)
@@ -160,7 +185,16 @@ def update_dashboard():
   
     w,h3 = make_label(bat, startx + 35 + spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
 
-    make_button("Shutdown", startx + 15 + spacingW, topB + h1 + h2 + h3 + 25 + 3*spacingH, 55, 140, fgColor)
+    global sdX
+    global sdY
+    global sdW
+    global sdH
+
+    sdX = startx + 15 + spacingW
+    sdY = topB +h1 +h2 +h3 + 25 + 3*spacingH
+    sdW = 140
+    sdH = 55
+    make_button("Shutdown", sdX, sdY, sdH, sdW, fgColor)
 
     startx = leftB
     starty = topB + glucH + 0 #spacingH
@@ -174,33 +208,15 @@ update_dashboard.lastentryid=''
 
 # define function that checks for touch location
 def on_touch():
-    # get the position that was touched
-    touch_pos = (pygame.mouse.get_pos() [0], pygame.mouse.get_pos() [1])
+    global pos
+
+    print "touched=",pos,"sdX=",sdX,"sdY=",sdY,"sdW=",sdW,"sdH=",sdH
     #  x_min                 x_max   y_min                y_max
-    # button 1 event
-    if 30 <= touch_pos[0] <= 240 and 30 <= touch_pos[1] <=85:
-            button(1)
-    # button 2 event
-    if 260 <= touch_pos[0] <= 470 and 30 <= touch_pos[1] <=85:
-            button(2)
-    # button 3 event
-    if 30 <= touch_pos[0] <= 240 and 105 <= touch_pos[1] <=160:
-            button(3)
-    # button 4 event
-    if 260 <= touch_pos[0] <= 470 and 105 <= touch_pos[1] <=160:
-            button(4)
-    # button 5 event
-    if 30 <= touch_pos[0] <= 240 and 180 <= touch_pos[1] <=235:
-            button(5)
-    # button 6 event
-    if 260 <= touch_pos[0] <= 470 and 180 <= touch_pos[1] <=235:
-            button(6)
-    # button 7 event
-    if 30 <= touch_pos[0] <= 240 and 255 <= touch_pos[1] <=310:
-            button(7)
-    # button 8 event
-    if 260 <= touch_pos[0] <= 470 and 255 <= touch_pos[1] <=310:
-            button(8)
+
+    if sdX <= pos[0] <= sdX+sdW and sdY <= pos[1] <=sdY+sdH:
+            print "Touched Shutdown" 
+            shutdown()
+#            sys.exit()
 
 # Define each button press action
 def button(number):
@@ -269,17 +285,18 @@ screen.fill(black)
 #data2=res2.json()
 #pprint.pprint(data2)
 
+pos = (pygame.mouse.get_pos() [0], pygame.mouse.get_pos() [1])
 # While loop to manage touch screen inputs
 counter=600
 loops=0
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print "screen pressed" #for debugging purposes
+#            print "screen pressed" #for debugging purposes
             pos = (pygame.mouse.get_pos() [0], pygame.mouse.get_pos() [1])
-            print pos #for checking
-            pygame.draw.circle(screen, white, pos, 2, 0) #for debugging purposes - adds a small dot where the screen is pressed
-            sys.exit()
+#            print pos #for checking
+#            pygame.draw.circle(screen, white, pos, 4, 0) #for debugging purposes - adds a small dot where the screen is pressed
+#            sys.exit()
             on_touch()
 
 #ensure there is always a safe way to end the program if the touch screen fails
@@ -292,6 +309,8 @@ while 1:
         counter = 0
         update_dashboard()
         loops = loops + 1
+
+    #pygame.display.update()
 
     pygame.time.wait(100)
     counter=counter+1
