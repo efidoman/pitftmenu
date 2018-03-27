@@ -123,7 +123,7 @@ def update_dashboard():
 
     tickW, tickH = make_label(tick, leftB + glucW + spacingW, topB, 50, fgColor)
 
-    startx = glucW + spacingW +22
+    startx = glucW + spacingW +17
     starty = tickH + 10 
     if trend == 1:
         #  direction='DoubleUp'
@@ -160,7 +160,7 @@ def update_dashboard():
   
     w,h3 = make_label(bat, startx + 35 + spacingW, topB + h1 + h2 + spacingH, 45, fgColor)
 
-    make_button("Shutdown", startx + 15 + spacingW, topB + h1 + h2 + h3 + 3*spacingH, 55, 140, fgColor)
+    make_button("Shutdown", startx + 15 + spacingW, topB + h1 + h2 + h3 + 25 + 3*spacingH, 55, 140, fgColor)
 
     startx = leftB
     starty = topB + glucH + 0 #spacingH
