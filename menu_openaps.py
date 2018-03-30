@@ -104,7 +104,7 @@ def update_dashboard():
     try:
         rigbattery=data2[0]['uploader']['battery']
         cob=data2[0]['openaps']['enacted']['COB']
-        iob=data2[0]['openaps']['enacted']['IOB']
+        iob=data2[0]['openaps']['iob']['iob']
         tick=data2[0]['openaps']['enacted']['tick']
         enacttimestamp=data2[0]['openaps']['enacted']['timestamp']
         print 'enact timestamp =',enacttimestamp
